@@ -2,8 +2,9 @@ from ctypes import *
 from gtts import gTTS
 import math
 import random
-
-
+import os
+reslist = []
+description = '';
 def sample(probs):
     s = sum(probs)
     probs = [a/s for a in probs]
@@ -139,6 +140,8 @@ def detect(net, meta, image, thresh=.5, hier_thresh=.5, nms=.45):
             if dets[j].prob[i] > 0:
                 b = dets[j].bbox
                 res.append((meta.names[i], dets[j].prob[i], (b.x, b.y, b.w, b.h)))
+                reslist.append(meta.names[i])
+                description = ', '.join(reslist)
     res = sorted(res, key=lambda x: -x[1])
     free_image(im)
     free_detections(dets, num)
@@ -153,6 +156,8 @@ if __name__ == "__main__":
     net = load_net("cfg/tiny-yolo.cfg", "tiny-yolo.weights", 0)
     meta = load_meta("cfg/coco.data")
     r = detect(net, meta, "data/dog.jpg")
+    myobj = gTTS(description, lang = "en", slow = False)
+    myobj.save("objdetect.mp3")
     print (r)
     
 
